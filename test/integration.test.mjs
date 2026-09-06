@@ -35,7 +35,7 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
     return result.structuredContent;
   }
   const list = await client.listTools();
-  assert.equal(list.tools.length, 15);
+  assert.equal(list.tools.length, 19);
   assert.ok(list.tools.every(t => !t.name.includes('codex') && !t.name.includes('bash')));
   assert.equal((await call('server_status')).platform, process.platform);
   assert.equal((await call('list_workspaces')).workspaces.length, 2);
@@ -107,6 +107,6 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
   assert.equal((await fetch(base + '/mcp', { method: 'OPTIONS', headers: { Origin: 'https://trusted.example' } })).status, 204);
   const urlClient = new Client({ name: 'url-test', version: '1' });
   await urlClient.connect(new StreamableHTTPClientTransport(new URL(base + '/mcp/' + config.token)));
-  assert.equal((await urlClient.listTools()).tools.length, 15);
+  assert.equal((await urlClient.listTools()).tools.length, 19);
   await urlClient.close();
 });

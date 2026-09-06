@@ -1,6 +1,6 @@
 {
   "name": "onputer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Local computer tools for web chats over Streamable HTTP MCP",
   "type": "module",
@@ -17,12 +17,13 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",
+    "diff": "9.0.0",
     "express": "5.1.0",
-    "zod": "3.25.76"
+    "zod": "3.25.76",
+    "typescript": "5.9.3"
   },
   "devDependencies": {
     "@types/express": "5.0.3",
-    "@types/node": "22.18.6",
-    "typescript": "5.9.3"
+    "@types/node": "22.18.6"
   }
 }

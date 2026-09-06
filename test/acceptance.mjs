@@ -55,8 +55,8 @@ async function command(text) {
 }
 try {
   await boot();
-  assert.equal((await client.listTools()).tools.length, 15);
-  passed('launcher starts from unrelated cwd, authenticated MCP handshake, 15 tools');
+  assert.equal((await client.listTools()).tools.length, 19);
+  passed('launcher starts from unrelated cwd, authenticated MCP handshake, 19 tools');
   await call('write_file', { path: 'AGENTS.md', content: 'Run tests before committing.' });
   await call('write_file', { path: 'src/AGENTS.md', content: 'Keep Korean text unchanged.' });
   assert.equal((await call('read_instructions', { path: 'src/app.mjs' })).files.length, 2);
@@ -67,11 +67,34 @@ try {
   await call('edit_file', { path: 'src/app.mjs', expected_hash: read.sha256, old_text: '안녕하세요', new_text: '작업 완료' });
   assert.ok((await command('node src/app.mjs')).output.includes('작업 완료'));
   passed('create/read/edit and execute Korean file');
+  const patch = [
+    '--- a/src/app.mjs', '+++ b/src/app.mjs', '@@ -1 +1,2 @@',
+    "-console.log('작업 완료');", "+import {answer} from './helper.mjs';", "+console.log('작업 완료', answer());",
+    '--- /dev/null', '+++ b/src/helper.mjs', '@@ -0,0 +1 @@', '+export function answer() { return 7; }',
+    '--- /dev/null', '+++ b/test/helper.test.mjs', '@@ -0,0 +1,3 @@',
+    "+import assert from 'node:assert/strict';", "+import {answer} from '../src/helper.mjs';", '+assert.equal(answer(), 7);', ''
+  ].join('\n');
+  const beforePatch = await call('read_file', { path: 'src/app.mjs' });
+  const preview = await call('apply_patch', { patch, expected_hashes: {'src/app.mjs': beforePatch.sha256}, dry_run: true });
+  assert.equal(preview.applied, false);
+  await assert.rejects(fs.stat(path.join(root, 'src/helper.mjs')), {code:'ENOENT'});
+  assert.equal((await call('apply_patch', { patch, expected_hashes: {'src/app.mjs': beforePatch.sha256} })).files.length, 3);
+  await command('node --test test/helper.test.mjs');
+  assert.ok((await command('node src/app.mjs')).output.includes('작업 완료 7'));
+  passed('MCP multi-file patch preview/application produces executable source and passing test');
+  assert.ok((await call('inspect_project')).languages.includes('javascript'));
+  assert.ok((await call('search_code', {query:'answer'})).matches.some(m=>m.path==='src/helper.mjs'));
+  assert.ok((await call('search_code', {query:'answer',kind:'references'})).matches.some(m=>m.path==='src/app.mjs'));
+  const impact = await call('analyze_changes', {paths:['src/helper.mjs']});
+  assert.ok(impact.dependents.some(d=>d.path==='src/app.mjs'));
+  assert.ok(impact.related_tests.some(t=>t.path==='test/helper.test.mjs'));
+  passed('MCP project map, definition/reference search and change-to-test impact');
+
   await command('git init');
   await command('git config user.name OnputerTest');
   await command('git config user.email onputer-test@example.invalid');
   await command('git checkout -b acceptance');
-  await command('git add AGENTS.md src');
+  await command('git add AGENTS.md src test');
   await command('git commit -m acceptance');
   await command('git remote add origin "../remote.git"');
   await command('git push -u origin acceptance');
