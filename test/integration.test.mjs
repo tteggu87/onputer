@@ -22,12 +22,12 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
   await fs.writeFile(path.join(temp, '.agents/skills/example/references/guide.md'), 'Reference proof');
   execFileSync('git', ['init'], { cwd: temp });
   const config = configSchema.parse({ roots: [temp, other], token: 'a'.repeat(64), allowedOrigins: ['https://trusted.example'] });
-  const { app, jobs } = createApp(config);
+  const { app, jobs, close } = createApp(config);
   const listener = app.listen(0, '127.0.0.1');
   await new Promise(r => listener.once('listening', r));
   const base = `http://127.0.0.1:${listener.address().port}`;
   const client = new Client({ name: 'test', version: '1.0' });
-  t.after(async () => { await client.close(); jobs.close(); listener.closeAllConnections(); await new Promise(r => listener.close(r)); await pause(1200); await fs.rm(temp, { recursive: true, force: true }); await fs.rm(other, { recursive: true, force: true }); });
+  t.after(async () => { await client.close(); await close(); listener.closeAllConnections(); await new Promise(r => listener.close(r)); await pause(1200); await fs.rm(temp, { recursive: true, force: true }); await fs.rm(other, { recursive: true, force: true }); });
   await client.connect(new StreamableHTTPClientTransport(new URL(base + '/mcp'), { requestInit: { headers: { Authorization: `Bearer ${config.token}` } } }));
   async function call(name, args = {}) {
     const result = await client.callTool({ name, arguments: args });
@@ -35,7 +35,7 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
     return result.structuredContent;
   }
   const list = await client.listTools();
-  assert.equal(list.tools.length, 19);
+  assert.equal(list.tools.length, 25);
   assert.ok(list.tools.every(t => !t.name.includes('codex') && !t.name.includes('bash')));
   assert.equal((await call('server_status')).platform, process.platform);
   assert.equal((await call('list_workspaces')).workspaces.length, 2);
@@ -90,10 +90,12 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
   assert.equal(result.exit_code, 7);
   const long = await call('run_command', { command: 'node -e "setInterval(()=>{},1000)"' });
   await pause(1000);
-  assert.equal((await call('stop_process', { process_id: long.process_id })).state, 'stopped');
+  assert.ok(['stopping','stopped'].includes((await call('stop_process', { process_id: long.process_id })).state));
+  for(let n=0;n<100;n++){result=await call('read_process',{process_id:long.process_id});if(result.state!=='stopping')break;await pause(100);}
+  assert.equal(result.state,'stopped');
   const timed = await call('run_command', { command: 'node -e "setInterval(()=>{},1000)"', timeout_seconds: 1 });
-  await pause(1500);
-  assert.equal((await call('read_process', { process_id: timed.process_id })).state, 'timed_out');
+  for(let n=0;n<100;n++){result=await call('read_process',{process_id:timed.process_id});if(!['running','stopping'].includes(result.state))break;await pause(100);}
+  assert.equal(result.state,'timed_out');
   if (windows) {
     const cmd = await call('run_command', { command: 'echo cmd-ok', shell: 'cmd' });
     await pause(1000);
@@ -107,6 +109,6 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
   assert.equal((await fetch(base + '/mcp', { method: 'OPTIONS', headers: { Origin: 'https://trusted.example' } })).status, 204);
   const urlClient = new Client({ name: 'url-test', version: '1' });
   await urlClient.connect(new StreamableHTTPClientTransport(new URL(base + '/mcp/' + config.token)));
-  assert.equal((await urlClient.listTools()).tools.length, 19);
+  assert.equal((await urlClient.listTools()).tools.length, 25);
   await urlClient.close();
 });

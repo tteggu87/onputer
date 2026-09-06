@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
+import type { FileRecorder } from './history.js';
 
 export const FILE_LIMIT = 1024 * 1024;
 const skipped = new Set(['.git', 'node_modules', '.onputer', '.ssh', '.aws', '.azure', '.gnupg', 'dist', 'build', '.next', '__pycache__']);
@@ -49,7 +50,7 @@ export async function locked<T>(file: string, fn: () => Promise<T>): Promise<T> 
   await previous;
   try { return await fn(); } finally { release(); if (locks.get(file) === next) locks.delete(file); }
 }
-export async function saveText(root: string, input: string, content: string, expectedHash?: string) {
+export async function saveText(root: string, input: string, content: string, expectedHash?: string, recorder?: FileRecorder) {
   const file = await resolvePath(root, input);
   if (Buffer.byteLength(content) > FILE_LIMIT) throw new Error('Content exceeds 1 MiB');
   return locked('file-writes', async () => {
@@ -57,6 +58,7 @@ export async function saveText(root: string, input: string, content: string, exp
     try { old = await textFile(file); } catch (e) { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; }
     if (old !== undefined && !expectedHash) throw new Error('Existing file: read_file first and provide expected_hash');
     if (expectedHash && (old === undefined || digest(old) !== expectedHash)) throw new Error('File changed. Read it again before writing');
+    const plan = await recorder?.prepare([{path: input, before: old ?? null, after: content}]);
     await fs.mkdir(path.dirname(file), { recursive: true });
     await resolvePath(root, input);
     const temp = path.join(path.dirname(file), '.onputer-' + randomUUID() + '.tmp');
@@ -65,6 +67,9 @@ export async function saveText(root: string, input: string, content: string, exp
       await fs.writeFile(temp, content, { flag: 'wx', mode });
       await fs.rename(temp, file);
     } finally { await fs.rm(temp, { force: true }); }
+    if (plan !== undefined) {
+      try { await recorder!.applied(plan); } catch (error) { throw new Error('File was written but its history completion could not be recorded; inspect the file before retrying: ' + String(error)); }
+    }
     return { path: input, sha256: digest(content), bytes: Buffer.byteLength(content), created: old === undefined };
   });
 }

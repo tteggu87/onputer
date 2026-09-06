@@ -12,6 +12,9 @@ export const configSchema = z.object({
   allowedHosts: z.array(z.string()).default(['localhost', '127.0.0.1', '[::1]']),
   allowedOrigins: z.array(z.string().url()).default([]),
   allowCommands: z.boolean().default(true),
+  historyDir: z.string().min(1).optional(),
+  historyArtifactMaxBytes: z.number().int().min(1048576).max(268435456).default(16777216),
+  historyRetentionDays: z.number().int().min(0).max(3650).default(30),
 });
 export type Config = z.infer<typeof configSchema>;
 export const expand = (p: string) => path.resolve(p === '~' ? os.homedir() : p.startsWith('~/') ? path.join(os.homedir(), p.slice(2)) : p);
@@ -19,6 +22,7 @@ export async function loadConfig(file: string): Promise<Config> {
   const c = configSchema.parse(JSON.parse(await fs.readFile(file, 'utf8')));
   c.roots = await Promise.all(c.roots.map(p => fs.realpath(expand(p))));
   c.skillRoots = c.skillRoots.map(expand);
+  c.historyDir = c.historyDir ? expand(c.historyDir) : path.join(path.dirname(path.resolve(file)), 'history');
   for (const root of c.roots) if (!(await fs.stat(root)).isDirectory()) throw new Error('Workspace root must be a directory');
   return c;
 }

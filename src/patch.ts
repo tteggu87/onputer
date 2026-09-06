@@ -3,6 +3,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { parsePatch, applyPatch as patchText } from 'diff';
 import { digest, FILE_LIMIT, locked, resolvePath, textFile } from './files.js';
+import type { FileRecorder } from './history.js';
 
 type Snapshot = { content: string; mode: number } | null;
 type Change = { path: string; absolute: string; before: Snapshot; after: string | null; mode?: number; temp?: string };
@@ -20,7 +21,7 @@ async function snapshot(file: string): Promise<Snapshot> {
 }
 
 /** Validate the entire batch and serialize it with write_file/edit_file. Not crash-atomic across files. */
-export async function applyWorkspacePatch(root: string, patch: string, expectedHashes: Record<string, string>, dryRun = false) {
+export async function applyWorkspacePatch(root: string, patch: string, expectedHashes: Record<string, string>, dryRun = false, recorder?: FileRecorder) {
   if (!patch.trim() || Buffer.byteLength(patch) > FILE_LIMIT) throw new Error('Patch must be nonempty and at most 1 MiB');
   if (/^(?:GIT binary patch|Binary files )/m.test(patch)) throw new Error('Binary patches are not supported');
   const parsed = parsePatch(patch);
@@ -62,6 +63,7 @@ export async function applyWorkspacePatch(root: string, patch: string, expectedH
         additions: part.hunks.reduce((n,h) => n + h.lines.filter(l => l.startsWith('+')).length, 0), deletions: part.hunks.reduce((n,h) => n + h.lines.filter(l => l.startsWith('-')).length, 0) });
     }
     if (dryRun) return { applied: false, dry_run: true, files: summary };
+    const plan = await recorder?.prepare(changes.map(c => ({path: c.path, before: c.before?.content ?? null, after: c.after})));
     const applied: Change[] = [];
     const createdDirs: string[] = [];
     try {
@@ -90,6 +92,7 @@ export async function applyWorkspacePatch(root: string, patch: string, expectedH
         else await fs.rename(change.temp!, change.absolute);
         applied.push(change);
       }
+      if (plan !== undefined) await recorder!.applied(plan);
     } catch (error) {
       const failed: string[] = [];
       for (const change of applied.reverse()) {

@@ -1,15 +1,22 @@
 import express from 'express';
 import { timingSafeEqual } from 'node:crypto';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { createTools } from './tools.js';
+import { createTools, type ToolLifecycle } from './tools.js';
 import { Jobs } from './jobs.js';
+import { History } from './history.js';
 import type { Config } from './config.js';
 
 export function createApp(config: Config) {
   const app = express();
-  const jobs = new Jobs();
+  const history = new History(config);
+  const jobs = new Jobs(history);
+  const ready = history.ready;
+  const lifecycle:ToolLifecycle={accepting:true,pending:new Set()};
+  void ready.catch(()=>{});
   app.disable('x-powered-by');
-  app.use((req, res, next) => {
+  app.use(async (req, res, next) => {
+    if(!lifecycle.accepting){res.status(503).json({error:'Server is shutting down'});return;}
+    try { await ready; } catch { res.status(503).json({error:'History initialization failed; inspect server logs'}); return; }
     res.setHeader('Cache-Control', 'no-store');
     let host: string;
     try { host = new URL('http://' + req.headers.host).hostname; } catch { res.sendStatus(403); return; }
@@ -33,7 +40,7 @@ export function createApp(config: Config) {
   app.use(express.json({ limit: '2mb' }));
   app.all(['/mcp', '/mcp/:token'], async (req, res) => {
     if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); res.sendStatus(405); return; }
-    const server = createTools(config, jobs);
+    const server = createTools(config, jobs, history, lifecycle);
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
     res.on('close', () => { void transport.close(); void server.close(); });
     try { await server.connect(transport); await transport.handleRequest(req, res, req.body); }
@@ -43,5 +50,7 @@ export function createApp(config: Config) {
     const status = (error as {status?: number})?.status;
     res.status(status === 413 ? 413 : 400).json({ error: 'Invalid or oversized request' });
   });
-  return { app, jobs };
+  let closing:Promise<void>|undefined;
+  const close=()=>closing??=(async()=>{lifecycle.accepting=false;await Promise.all([...lifecycle.pending]);try{await jobs.close();}finally{await history.close();}})();
+  return { app, jobs, history, ready, close };
 }
