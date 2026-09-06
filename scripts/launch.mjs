@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
@@ -61,11 +60,7 @@ try {
   console.log(`Workspace: ${config.roots.join(', ')}`);
   console.log(`Private connection details: ${connectionFile}`);
   if (!args.includes('--setup-only')) {
-    const child = spawn(process.execPath, [path.join(project, 'dist', 'index.js')], { cwd: project, stdio: 'inherit', env: { ...process.env, ONPUTER_CONFIG: configFile } });
-    let interrupted = false;
-    const stop = () => { if (!interrupted) { interrupted = true; child.kill('SIGINT'); } };
-    process.on('SIGINT', stop); process.on('SIGTERM', stop);
-    const code = await new Promise((resolve, reject) => { child.on('error', reject); child.on('exit', (code, signal) => resolve(signal === 'SIGINT' || interrupted ? 0 : code ?? 1)); });
-    process.exitCode = code;
+    process.env.ONPUTER_CONFIG = configFile;
+    await import('../dist/index.js');
   }
 } catch (error) { console.error(`onputer: ${error.message}`); process.exitCode = 1; }

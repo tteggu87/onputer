@@ -19,7 +19,7 @@ export class Jobs {
     if (windows && shell !== 'cmd') {
       executable = 'powershell.exe';
       const prefix = "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); $OutputEncoding = [Console]::OutputEncoding; ";
-      args = ['-NoLogo', '-NoProfile', '-NonInteractive', '-EncodedCommand', Buffer.from(prefix + "$global:LASTEXITCODE = 0; " + command + "; $onputerSuccess = $?; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; if (-not $onputerSuccess) { exit 1 }", 'utf16le').toString('base64')];
+      args = ['-NoLogo', '-NoProfile', '-NonInteractive', '-EncodedCommand', Buffer.from(prefix + "$global:LASTEXITCODE = 0; " + command + "\n$onputerSuccess = $?; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; if (-not $onputerSuccess) { exit 1 }", 'utf16le').toString('base64')];
     } else if (windows) {
       executable = process.env.ComSpec || 'cmd.exe'; args = ['/d', '/s', '/c', command];
     } else {

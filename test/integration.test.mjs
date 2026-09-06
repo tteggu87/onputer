@@ -85,7 +85,7 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
   let result;
   for (let n=0; n<100; n++) { result = await call('read_process', { process_id: job.process_id }); if (result.state !== 'running') break; await pause(100); }
   assert.equal(result.state, 'completed'); assert.equal(result.exit_code, 0); assert.ok(result.output.includes('안녕하세요'));
-  const fail = await call('run_command', { command: 'node -e "process.exit(7)"' });
+  const fail = await call('run_command', { command: windows ? 'node -e "process.exit(7)" # trailing comment' : 'node -e "process.exit(7)"' });
   for (let n=0; n<100; n++) { result = await call('read_process', { process_id: fail.process_id }); if (result.state !== 'running') break; await pause(100); }
   assert.equal(result.exit_code, 7);
   const long = await call('run_command', { command: 'node -e "setInterval(()=>{},1000)"' });

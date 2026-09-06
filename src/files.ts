@@ -52,7 +52,7 @@ export async function locked<T>(file: string, fn: () => Promise<T>): Promise<T> 
 export async function saveText(root: string, input: string, content: string, expectedHash?: string) {
   const file = await resolvePath(root, input);
   if (Buffer.byteLength(content) > FILE_LIMIT) throw new Error('Content exceeds 1 MiB');
-  return locked(root.toLowerCase(), async () => {
+  return locked('file-writes', async () => {
     let old: string | undefined;
     try { old = await textFile(file); } catch (e) { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; }
     if (old !== undefined && !expectedHash) throw new Error('Existing file: read_file first and provide expected_hash');
