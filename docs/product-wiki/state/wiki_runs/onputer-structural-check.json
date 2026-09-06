@@ -1,0 +1,76 @@
+{
+  "status": "ok",
+  "semantic_status": "pending_broader_projection",
+  "source": "raw/notes/2026-09-06-onputer-product-proposals.md",
+  "source_page_stage": "ok",
+  "source_page": "wiki/sources/source-2026-09-06-product-proposals.md",
+  "handoff": null,
+  "ingest_report": "wiki/_meta/ingest_reports/ingest-2026-09-06-product-proposals.md",
+  "proposed_jsonl_files": [],
+  "checks": [
+    {
+      "name": "repo_contract_exists",
+      "status": "ok"
+    },
+    {
+      "name": "source_inside_repo",
+      "status": "ok"
+    },
+    {
+      "name": "source_exists",
+      "status": "ok",
+      "path": "raw/notes/2026-09-06-onputer-product-proposals.md"
+    },
+    {
+      "name": "source_under_raw",
+      "status": "ok"
+    },
+    {
+      "name": "source_page_exists",
+      "status": "ok",
+      "path": "wiki/sources/source-2026-09-06-product-proposals.md"
+    },
+    {
+      "name": "source_page_synthesized",
+      "status": "ok",
+      "message": "status=active"
+    },
+    {
+      "name": "ingest_report_exists",
+      "status": "ok",
+      "path": "wiki/_meta/ingest_reports/ingest-2026-09-06-product-proposals.md"
+    },
+    {
+      "name": "index_mentions_source_page",
+      "status": "ok"
+    },
+    {
+      "name": "index_mentions_ingest_report",
+      "status": "ok"
+    },
+    {
+      "name": "log_mentions_source",
+      "status": "ok"
+    },
+    {
+      "name": "jsonl_projection",
+      "status": "not_applicable",
+      "message": "wiki-only workspace"
+    },
+    {
+      "name": "ontology_integrity",
+      "status": "not_applicable",
+      "message": "wiki-only workspace"
+    },
+    {
+      "name": "broader_wiki_projection",
+      "status": "ok",
+      "message": "applied ingest report lists affected wiki page updates"
+    },
+    {
+      "name": "review_gate",
+      "status": "ok",
+      "message": "accepted truth remains intentionally review-gated"
+    }
+  ]
+}

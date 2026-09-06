@@ -4,6 +4,8 @@
 Windows를 주 작업 환경으로 설계하고 macOS와 Linux도 지원합니다.
 연결한 AI가 `AGENTS.md`와 스킬을 읽고 작업하도록 필요한 문맥을 제공합니다.
 
+제품 방향과 추가 기능 제안은 [제품 위키](docs/product-wiki/README.md)에서 읽을 수 있습니다. 구현된 기능과 제안 단계 기능을 구분해 기록합니다.
+
 ## 빠른 시작
 
 1. **Node.js 22 이상**을 [설치](https://nodejs.org/)합니다. Git 작업을 하려면 [Git](https://git-scm.com/downloads)도 설치합니다.

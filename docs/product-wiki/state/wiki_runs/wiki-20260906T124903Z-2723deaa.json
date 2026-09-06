@@ -1,0 +1,157 @@
+{
+  "schema_version": 3,
+  "runtime": "llm-wiki-loop",
+  "runtime_version": 2,
+  "run_id": "wiki-20260906T124903Z-2723deaa",
+  "workflow": "INGEST",
+  "status": "completed",
+  "created_at": "2026-09-06T12:49:03.845098+00:00",
+  "updated_at": "2026-09-06T12:58:14.937238+00:00",
+  "source": "raw/notes/2026-09-06-onputer-product-proposals.md",
+  "source_sha256": "sha256:c399c5379b0543f23f7609a807c98c65f44c498d33e9dfdfc0571ec86b3730af",
+  "coverage_mode": "full",
+  "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+  "baseline_fingerprint": "sha256:4a853166f0d89ed739b841d00f9d714586eb9f01440cabc519195fa0daa4fd6e",
+  "last_observed_fingerprint": "sha256:be528bc2ef9e805665de2901342fdf8d21c72ec60a4f8ebeed5943513cc1716b",
+  "first_mutation_sequence": 4,
+  "latest_mutation_sequence": 7,
+  "sequence": 9,
+  "stages": {
+    "inspect_contract_and_index": {
+      "stage_id": "inspect_contract_and_index",
+      "sequence": 1,
+      "recorded_at": "2026-09-06T12:49:53.091125+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:4a853166f0d89ed739b841d00f9d714586eb9f01440cabc519195fa0daa4fd6e",
+      "references": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "sha256:f1057745a421b216a555ae29282f8f7195e22aea03bd4e9fc7657656a7c6e586"
+        }
+      ]
+    },
+    "inspect_source_and_existing_scope": {
+      "stage_id": "inspect_source_and_existing_scope",
+      "sequence": 2,
+      "recorded_at": "2026-09-06T12:49:53.178059+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:4a853166f0d89ed739b841d00f9d714586eb9f01440cabc519195fa0daa4fd6e",
+      "references": [
+        {
+          "path": "raw/notes/2026-09-06-onputer-product-proposals.md",
+          "sha256": "sha256:c399c5379b0543f23f7609a807c98c65f44c498d33e9dfdfc0571ec86b3730af"
+        }
+      ]
+    },
+    "semantic_plan_frozen": {
+      "stage_id": "semantic_plan_frozen",
+      "sequence": 3,
+      "recorded_at": "2026-09-06T12:49:53.262910+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:4a853166f0d89ed739b841d00f9d714586eb9f01440cabc519195fa0daa4fd6e",
+      "references": [
+        {
+          "path": "state/wiki_runs/onputer-product-plan.md",
+          "sha256": "sha256:7e2fa0df7a380bad42e594a9499e4fe9ab550488b3d6d9d360749cf7e5d43989"
+        }
+      ]
+    },
+    "register_or_resolve_source": {
+      "stage_id": "register_or_resolve_source",
+      "sequence": 4,
+      "recorded_at": "2026-09-06T12:50:22.461692+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:40213d4358d0e7fdd3cd17e8644dc9bdfd54774327aff9f48470f8d212d16c35",
+      "references": [
+        {
+          "path": "wiki/sources/source-2026-09-06-product-proposals.md",
+          "sha256": "sha256:bf9bec1975da281e2ab578e901747238f9990253eee8dc66e80a0de1ea1b260b"
+        }
+      ]
+    },
+    "update_source_page": {
+      "stage_id": "update_source_page",
+      "sequence": 5,
+      "recorded_at": "2026-09-06T12:54:56.895913+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:1ea368d1207d4f5c602dfc3356661387789c28027b805d14697cc7ef73afbade",
+      "references": [
+        {
+          "path": "wiki/sources/source-2026-09-06-product-proposals.md",
+          "sha256": "sha256:9413475c5ae459a61f0653058183953fffb5aed4e298861d4397f5c52ca50c11"
+        }
+      ]
+    },
+    "update_affected_pages": {
+      "stage_id": "update_affected_pages",
+      "sequence": 6,
+      "recorded_at": "2026-09-06T12:56:37.304264+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:2a2736672761e5312ec287794f73df475a03f8246f6b44153fc19d1cd69d9c78",
+      "references": [
+        {
+          "path": "wiki/analyses/feature-candidates.md",
+          "sha256": "sha256:b57e870b228cfdefd0ffb087eb6f73e6d1d068437ef232097a84079f79a121f3"
+        }
+      ]
+    },
+    "refresh_index_and_log": {
+      "stage_id": "refresh_index_and_log",
+      "sequence": 7,
+      "recorded_at": "2026-09-06T12:56:37.441058+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:be528bc2ef9e805665de2901342fdf8d21c72ec60a4f8ebeed5943513cc1716b",
+      "references": [
+        {
+          "path": "wiki/_meta/index.md",
+          "sha256": "sha256:c0ef655f7226ec72622a54a95895713f04b422d829b39561ada2a61431d455ec"
+        }
+      ]
+    },
+    "validate_structure": {
+      "stage_id": "validate_structure",
+      "sequence": 8,
+      "recorded_at": "2026-09-06T12:57:28.065124+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:be528bc2ef9e805665de2901342fdf8d21c72ec60a4f8ebeed5943513cc1716b",
+      "references": [
+        {
+          "path": "state/wiki_runs/onputer-structural-check.json",
+          "sha256": "sha256:ef6b0854481efe3ade67b25d4530238165bcb27bb5b5ce144a8a6823b1ca9dd6"
+        }
+      ],
+      "result": "passed"
+    },
+    "final_review_completed": {
+      "stage_id": "final_review_completed",
+      "sequence": 9,
+      "recorded_at": "2026-09-06T12:58:14.851037+00:00",
+      "contract_digest": "sha256:9f045088ecc46096d8ac545e3e289594dbca9c57b7c01aefd314435d4c5e656f",
+      "state_fingerprint": "sha256:be528bc2ef9e805665de2901342fdf8d21c72ec60a4f8ebeed5943513cc1716b",
+      "references": [
+        {
+          "path": "wiki/_meta/ingest_reports/ingest-2026-09-06-product-proposals.md",
+          "sha256": "sha256:3fcad5e23fb097a9acdf35308a0cccd1cb03eda2996d74242e78623ac4bcb5ab"
+        },
+        {
+          "path": "state/wiki_runs/onputer-final-review.md",
+          "sha256": "sha256:f1029827c54e0356a2e1dc5b8c5dffce70ad6991bbb3b8c7e7066d605bccd631"
+        }
+      ],
+      "result": "passed",
+      "posture": "ready",
+      "reviewed_fingerprint": "sha256:be528bc2ef9e805665de2901342fdf8d21c72ec60a4f8ebeed5943513cc1716b",
+      "reviewed_mutation_sequence": 7
+    }
+  },
+  "completed_at": "2026-09-06T12:58:14.935694+00:00",
+  "completion_fingerprint": "sha256:be528bc2ef9e805665de2901342fdf8d21c72ec60a4f8ebeed5943513cc1716b",
+  "retrieval_refresh": {
+    "retrieval_ready": false,
+    "retrieval_status": "not_enabled",
+    "semantic_status": "unavailable",
+    "reason": "SQLite retrieval helpers are not installed",
+    "attempt": 1,
+    "completed_at": "2026-09-06T12:58:14.937236+00:00"
+  }
+}
