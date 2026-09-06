@@ -49,3 +49,7 @@ sources:
 ## 다음 연결
 
 이 기능이 사용자의 눈에 어떻게 보이는지는 [[user-experiences|사용자 경험]]에서 읽는다. 구현 순서와 완료 기준은 [[roadmap|로드맵 제안]], 아직 결정되지 않은 범위는 [[open-decisions|미결정 사항]]으로 연결된다.
+
+## DSH 구조 검토와 연결
+
+[[dsh-trajectory-adoption|DSH trajectory 적용 평가]]에서 이력·출력·결과·지침 기록을 연결하는 기술 기반을 검토했다. 근거는 [[source-2026-09-06-dsh-trajectory-review|최신 코드 검토]]이며, 이 링크 추가는 후보의 구현 승인이나 기존 우선순위 변경이 아니다.

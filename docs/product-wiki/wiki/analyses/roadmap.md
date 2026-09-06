@@ -49,3 +49,7 @@ sources:
 - onputer 자체 AI 모델과 복잡한 에이전트 실행 엔진
 
 확정 폐기가 아니다. 실제 필요가 확인되면 새로운 근거와 함께 다시 평가한다. 사용자에게 보일 경험은 [[user-experiences|사용자 경험과 우와 포인트]], 후보의 동작 범위는 [[feature-candidates|기능 후보]]를 참조한다.
+
+## DSH 구조 검토와 연결
+
+[[dsh-trajectory-adoption|DSH trajectory 적용 평가]]에서 이력·출력·결과·지침 기록을 연결하는 기술 기반을 검토했다. 근거는 [[source-2026-09-06-dsh-trajectory-review|최신 코드 검토]]이며, 이 링크 추가는 후보의 구현 승인이나 기존 우선순위 변경이 아니다.

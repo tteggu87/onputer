@@ -1,0 +1,5 @@
+PASS: requested but undispatched tool becomes TOOL_NOT_STARTED
+PASS: started tool without durable result becomes outcome unknown, with source linkage
+PASS: recovery closers are idempotent for balanced repaired log
+PASS: source-sequence encoding round trip and invalid-range rejection
+PASS: payload snapshot isolates caller mutation and rejects lossy JSON
