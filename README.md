@@ -12,7 +12,7 @@ Windows를 주 작업 환경으로 설계하고 macOS와 Linux도 지원합니�
 2. 이 저장소를 내려받고 압축을 풉니다. 또는 `git clone https://github.com/tteggu87/onputer.git`을 실행합니다.
 3. Windows는 **`start-onputer.bat`**, macOS는 **`start-onputer.command`**를 실행합니다.
 4. 처음 표시되는 질문에 작업할 폴더의 전체 경로를 입력합니다. Enter만 누르면 onputer 폴더를 사용합니다.
-5. 설치·빌드가 끝나 `onputer ready`가 나오면 준비 완료입니다. 연결 정보는 **`.onputer/connection.txt`**에 있습니다.
+5. 설치·빌드가 끝나 `onputer ready`가 나오면 준비 완료입니다. 실행창에 **서버 URL·Bearer 토큰·Authorization 헤더·토큰 포함 URL**이 표시되어 바로 복사할 수 있습니다. 같은 정보는 **`.onputer/connection.txt`**에도 저장됩니다. 인증 설정에 토큰 입력칸이 따로 있으면 토큰 값만 붙여 넣으세요.
 
 처음에는 npm 다운로드를 위한 인터넷 연결이 필요합니다. 이후에는 잠금 파일이 바뀔 때만 의존성을 다시 설치합니다.
 실행창을 열어둔 채 사용하고, **Ctrl+C**로 서버와 실행 중인 작업을 종료합니다. 자동 백그라운드 서비스 설치는 하지 않습니다.

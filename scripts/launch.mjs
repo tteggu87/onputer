@@ -53,12 +53,13 @@ try {
   const { loadConfig } = await import('../dist/config.js');
   config = await loadConfig(configFile);
   const url = `http://${config.host}:${config.port}/mcp`;
-  const connection = `onputer connection\n\nServer URL: ${url}\nAuthorization: Bearer ${config.token}\n\nFor clients that only accept a URL (keep it private):\n${url}/${config.token}\n\nA remote web service needs an HTTPS tunnel to this local port.\nAdd the public hostname to allowedHosts in config.json and restart.\nReplace the local origin above with that HTTPS origin.\nNever share connection.txt or config.json.\n`;
+  const connection = `onputer connection\n\nServer URL: ${url}\n\nBearer token (paste only this value into the token field):\n${config.token}\n\nAuthorization header (for custom headers):\nAuthorization: Bearer ${config.token}\n\nFor clients that only accept a URL (keep it private):\n${url}/${config.token}\n\nA remote web service needs an HTTPS tunnel to this local port.\nAdd the public hostname to allowedHosts in config.json and restart.\nReplace the local origin above with that HTTPS origin.\nNever share connection.txt or config.json.\n`;
   const connectionFile = path.join(path.dirname(configFile), 'connection.txt');
   await fs.writeFile(connectionFile, connection, { mode: 0o600 });
   await fs.chmod(connectionFile, 0o600);
   console.log(`Workspace: ${config.roots.join(', ')}`);
   console.log(`Private connection details: ${connectionFile}`);
+  console.log(`\n${connection}`);
   if (!args.includes('--setup-only')) {
     process.env.ONPUTER_CONFIG = configFile;
     await import('../dist/index.js');
