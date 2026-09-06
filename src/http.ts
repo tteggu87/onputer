@@ -1,0 +1,47 @@
+import express from 'express';
+import { timingSafeEqual } from 'node:crypto';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { createTools } from './tools.js';
+import { Jobs } from './jobs.js';
+import type { Config } from './config.js';
+
+export function createApp(config: Config) {
+  const app = express();
+  const jobs = new Jobs();
+  app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    let host: string;
+    try { host = new URL('http://' + req.headers.host).hostname; } catch { res.sendStatus(403); return; }
+    if (!config.allowedHosts.includes(host)) { res.status(403).json({ error: 'Host is not allowed. Add its hostname to allowedHosts in local config.' }); return; }
+    const origin = req.headers.origin;
+    if (origin && !config.allowedOrigins.includes(origin)) { res.status(403).json({ error: 'Origin is not allowed' }); return; }
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, MCP-Protocol-Version, MCP-Session-Id, Accept');
+      res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, OPTIONS');
+    }
+    if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
+    if (req.path === '/health') { res.json({ name: 'onputer', status: 'ok' }); return; }
+    const supplied = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : req.path.startsWith('/mcp/') ? req.path.slice(5) : '';
+    const expected = Buffer.from(config.token);
+    const actual = Buffer.from(supplied);
+    if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) { res.status(401).json({ error: 'Supply Authorization: Bearer <token> or use the private /mcp/<token> URL' }); return; }
+    next();
+  });
+  app.use(express.json({ limit: '2mb' }));
+  app.all(['/mcp', '/mcp/:token'], async (req, res) => {
+    if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); res.sendStatus(405); return; }
+    const server = createTools(config, jobs);
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
+    res.on('close', () => { void transport.close(); void server.close(); });
+    try { await server.connect(transport); await transport.handleRequest(req, res, req.body); }
+    catch { if (!res.headersSent) res.status(500).json({ error: 'MCP request failed' }); }
+  });
+  app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    const status = (error as {status?: number})?.status;
+    res.status(status === 413 ? 413 : 400).json({ error: 'Invalid or oversized request' });
+  });
+  return { app, jobs };
+}

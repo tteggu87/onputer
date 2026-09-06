@@ -1,0 +1,30 @@
+name: Cross-platform tests
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        node: [22, 24]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - name: Windows launcher, Unicode and spaces
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: start-onputer.bat --setup-only --no-prompt --root "%CD%\test\fixtures\한글 project"
+      - name: macOS launcher
+        if: runner.os == 'macOS'
+        run: ./start-onputer.command --setup-only --no-prompt --root "$PWD/test/fixtures/한글 project"
+      - name: Linux launcher
+        if: runner.os == 'Linux'
+        run: node scripts/launch.mjs --setup-only --no-prompt --root "$PWD/test/fixtures/한글 project"
