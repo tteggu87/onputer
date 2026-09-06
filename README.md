@@ -146,9 +146,11 @@ AI 도구 설명의 확인 지침은 사용자 승인 UI를 대체하지 않습�
 ```sh
 npm ci --ignore-scripts
 npm test
+npm run test:acceptance
 ```
 
 공식 MCP SDK 클라이언트로 HTTP 초기화·도구 호출, 파일 충돌, 경로 차단, 지침·스킬, Git과 프로세스 수명주기를 검증합니다.
+추가 인수 검사는 실제 실행 파일로 서버를 시작해 임시 저장소의 Git 커밋·푸시, 출력 페이지 이동, 자식 프로세스 중단·시간 초과를 확인합니다. macOS·Linux에서는 Ctrl+C 종료와 재시작도 검사합니다.
 GitHub Actions는 Windows·macOS·Linux에서 Node 22/24 조합과 실행 파일을 검사합니다.
 
 전송은 [Streamable HTTP 명세](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)에 따른 stateless JSON 응답 방식입니다.

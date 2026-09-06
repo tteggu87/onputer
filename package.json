@@ -12,7 +12,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node scripts/launch.mjs",
     "serve": "node dist/index.js",
-    "test": "npm run build && node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs",
+    "test:acceptance": "node test/acceptance.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",
