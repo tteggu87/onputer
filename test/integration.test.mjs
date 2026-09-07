@@ -111,4 +111,11 @@ test('Streamable HTTP: workspaces, instructions, skills, files, Git, processes a
   await urlClient.connect(new StreamableHTTPClientTransport(new URL(base + '/mcp/' + config.token)));
   assert.equal((await urlClient.listTools()).tools.length, 25);
   await urlClient.close();
+  for (const tokenPath of [config.token + '/', '%61' + config.token.slice(1)]) {
+    const normalized = new Client({ name: 'normalized-url-test', version: '1' });
+    await normalized.connect(new StreamableHTTPClientTransport(new URL(base + '/mcp/' + tokenPath)));
+    assert.equal((await normalized.listTools()).tools.length, 25);
+    await normalized.close();
+  }
+  assert.equal((await fetch(base + '/mcp/' + 'b'.repeat(64) + '/', { method: 'POST' })).status, 401);
 });

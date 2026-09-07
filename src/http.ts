@@ -31,7 +31,11 @@ export function createApp(config: Config) {
     }
     if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
     if (req.path === '/health') { res.json({ name: 'onputer', status: 'ok' }); return; }
-    const supplied = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : req.path.startsWith('/mcp/') ? req.path.slice(5) : '';
+    // Match the route's optional trailing slash without treating it as token data.
+    const tokenSegment = /^\/mcp\/([^/]+)\/?$/.exec(req.path)?.[1];
+    let pathToken = '';
+    if (tokenSegment) { try { pathToken = decodeURIComponent(tokenSegment); } catch { /* malformed token encoding stays unauthenticated */ } }
+    const supplied = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : pathToken;
     const expected = Buffer.from(config.token);
     const actual = Buffer.from(supplied);
     if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) { res.status(401).json({ error: 'Supply Authorization: Bearer <token> or use the private /mcp/<token> URL' }); return; }
