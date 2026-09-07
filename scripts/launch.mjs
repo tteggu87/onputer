@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { createInterface } from 'node:readline/promises';
+import { manageWorkspaces } from './workspaces.mjs';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -30,14 +30,16 @@ try {
   let config;
   try { config = JSON.parse(await fs.readFile(configFile, 'utf8')); }
   catch (e) { if (e.code !== 'ENOENT') throw e; }
-  let selected = option('--root');
-  if (!config && !selected && process.stdin.isTTY && !args.includes('--no-prompt')) {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
-    selected = (await rl.question('Workspace folder (Enter = this onputer folder): ')).trim().replace(/^"|"$/g, '');
-    rl.close();
-  }
+  const selected = option('--root');
+  const firstRun = !config;
   if (!config) config = { roots: [path.resolve(selected || project)], skillRoots: [], host: '127.0.0.1', port: 8788, token: randomBytes(32).toString('hex'), allowedHosts: ['localhost', '127.0.0.1', '[::1]'], allowedOrigins: [], allowCommands: true };
   else if (selected) config.roots = [path.resolve(selected)];
+  const interactive = !args.includes('--no-prompt') && (process.stdin.isTTY || args.includes('--workspaces')) && (!selected || args.includes('--workspaces'));
+  if (interactive) {
+    const selection = await manageWorkspaces(config.roots, {firstRun: firstRun && !selected});
+    if (!selection.start) { console.log('시작을 취소했습니다. 저장된 설정은 변경하지 않았습니다.'); process.exit(0); }
+    config.roots = selection.roots;
+  }
   const port = option('--port');
   if (port !== undefined) config.port = Number(port);
   for (const root of config.roots) if (!(await fs.stat(root)).isDirectory()) throw new Error(`Not a directory: ${root}`);

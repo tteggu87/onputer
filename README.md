@@ -11,7 +11,7 @@ Windows를 주 작업 환경으로 설계하고 macOS와 Linux도 지원합니�
 1. **Node.js 22 이상**을 [설치](https://nodejs.org/)합니다. Git 작업을 하려면 [Git](https://git-scm.com/downloads)도 설치합니다.
 2. 이 저장소를 내려받고 압축을 풉니다. 또는 `git clone https://github.com/tteggu87/onputer.git`을 실행합니다.
 3. Windows는 **`start-onputer.bat`**, macOS는 **`start-onputer.command`**를 실행합니다.
-4. 처음 표시되는 질문에 작업할 폴더의 전체 경로를 입력합니다. Enter만 누르면 onputer 폴더를 사용합니다.
+4. 처음에는 작업 폴더를 입력합니다. 이후에도 매번 등록된 워크스페이스와 관리 메뉴가 나옵니다. **Enter**로 기존 목록 그대로 시작하거나 **A 추가 / E 경로 변경 / R 등록 해제**를 선택하세요.
 5. 설치·빌드가 끝나 `onputer ready`가 나오면 준비 완료입니다. 실행창에 **서버 URL·Bearer 토큰·Authorization 헤더·토큰 포함 URL**이 표시되어 바로 복사할 수 있습니다. 같은 정보는 **`.onputer/connection.txt`**에도 저장됩니다. 인증 설정에 토큰 입력칸이 따로 있으면 토큰 값만 붙여 넣으세요.
 
 처음에는 npm 다운로드를 위한 인터넷 연결이 필요합니다. 이후에는 잠금 파일이 바뀔 때만 의존성을 다시 설치합니다.
@@ -33,7 +33,8 @@ start-onputer.bat --root "C:\Users\me\Documents\My Project"
 
 Linux 또는 일반 터미널에서는 `npm start -- --root "/path/to/project"`를 사용합니다.
 `--port 8790`으로 포트를 변경할 수 있고, `--setup-only --no-prompt`는 설정·설치·빌드만 수행합니다.
-`--root`는 기존 설정의 작업공간 목록을 지정한 하나로 교체합니다.
+`--root`는 기존 설정의 작업공간 목록을 지정한 하나로 교체하고 바로 실행합니다. 여러 폴더를 유지하려면 실행 메뉴의 **A 추가**를 사용하세요.
+`--workspaces`는 관리 메뉴를 명시적으로 열고, `--no-prompt`는 자동 실행용으로 메뉴를 생략합니다. 메뉴에서 **Q**로 종료하면 편집 중인 목록을 저장하지 않습니다. 변경 사항은 시작을 선택할 때 저장되며 토큰과 다른 설정은 유지됩니다.
 
 ## 웹 서비스에 연결
 
